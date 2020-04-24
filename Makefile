@@ -31,5 +31,5 @@ $(DEMO_APP): $(BUILD_DIR) $(KLEIN_OBJS) $(DEMO_OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-debug: CFLAGS+=-g
+debug: CFLAGS+=-g -DDEBUG
 debug: default

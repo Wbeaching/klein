@@ -163,6 +163,7 @@ void merge_nibbles(uint8_t *state, uint8_t *nibbles)
 }
 // =====
 
+#ifdef DEBUG
 void print_named_buffer(const char *name, uint8_t *buffer, uint8_t len)
 {
     if (!name || !buffer || len == 0)
@@ -176,3 +177,4 @@ void print_named_buffer(const char *name, uint8_t *buffer, uint8_t len)
     }
     printf("\n");
 }
+#endif

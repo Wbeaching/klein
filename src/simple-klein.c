@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// for debug prints only
+#ifdef DEBUG
 #include <stdio.h>
+#endif
 
 #include "internals.h"
 
@@ -46,7 +47,9 @@ int sklein_crypt_block(sklein_t crypter, uint8_t *block)
     // start KLEIN rounds
     for (int i = 1; i <= rounds; ++i)
     {
+#ifdef DEBUG
         printf("[round number: %d]\n", i);
+#endif
         add_round_key(state, subkey);
         // operations with 4-bit nibbles start
         split_nibbles(state, nibbles);

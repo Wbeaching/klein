@@ -38,6 +38,10 @@ void split_nibbles(uint8_t *state, uint8_t *nibbles);
 void merge_nibbles(uint8_t *state, uint8_t *nibbles);
 
 // utility (debug only) function
+#ifdef DEBUG
 void print_named_buffer(const char *name, uint8_t *buffer, uint8_t len);
+#else
+#define print_named_buffer(x, y, z)
+#endif
 
 #endif // __KLEIN_INTERNALS_H__
