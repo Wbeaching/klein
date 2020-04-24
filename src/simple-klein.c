@@ -7,7 +7,7 @@
 
 #include "internals.h"
 
-sklein_t sklein_init(int km)
+sklein_t sklein_create(int km)
 {
     if (km < KLEIN_MODE_64 || km > KLEIN_MODE_96)
     {
@@ -75,5 +75,24 @@ void sklein_destroy(sklein_t crypter)
     if (crypter == NULL)
     {
         return;
+    }
+}
+
+const char *klein_mode_to_string(int mode)
+{
+    switch (mode)
+    {
+    case KLEIN_MODE_64:
+        return "KLEIN_MODE_64";
+        break;
+    case KLEIN_MODE_80:
+        return "KLEIN_MODE_80";
+        break;
+    case KLEIN_MODE_96:
+        return "KLEIN_MODE_96";
+        break;
+    default:
+        return "unknown";
+        break;
     }
 }

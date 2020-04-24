@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     printf("KLEIN cipher demo application\n");
 
-    sklein_t crypter = sklein_init(KLEIN_MODE_64);
+    sklein_t crypter = sklein_create(KLEIN_MODE_64);
     if (crypter == NULL)
     {
         printf("ERROR: Failed to create KLEIN-64\n");

@@ -20,7 +20,7 @@ enum klein_result
     KLEIN_RESULT_INVALID_LENGTH,
 };
 
-sklein_t sklein_init(int km);
+sklein_t sklein_create(int km);
 
 int sklein_set_key(sklein_t crypter, const uint8_t *mkey, uint8_t k_length);
 
@@ -31,5 +31,7 @@ int sklein_crypt_block(sklein_t crypter, uint8_t *block);
 int sklein_decrypt_block(sklein_t crypter, uint8_t *block);
 
 void sklein_destroy(sklein_t crypter);
+
+const char *klein_mode_to_string(int mode);
 
 #endif
