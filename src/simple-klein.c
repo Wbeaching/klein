@@ -1,12 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "internals.h"
+// for debug prints only
+#include <stdio.h>
 
-// number of rounds for KLEIN_MODE_64, _80 and 96 respectively
-static const uint8_t ROUND_COUNT[3] = {12, 16, 20};
-// key length for KLEIN_MODE_64, _80 and 96 respectively
-static const uint8_t KEY_SIZE[3] = {8, 10, 12};
+#include "internals.h"
 
 sklein_t sklein_init(int km)
 {
@@ -36,6 +34,31 @@ int sklein_set_key(sklein_t crypter, const uint8_t *mkey, uint8_t k_length)
 
 int sklein_crypt_block(sklein_t crypter, uint8_t *block)
 {
+    // prepare necessary data/variables
+    uint8_t state[BLOCK_SIZE];       // state as N 8-bit words
+    uint8_t nibbles[BLOCK_SIZE * 2]; // state as 2N 4-bit words (stored in 8-bit vars)
+    uint8_t subkey[12];              // prepare space for longest supported key
+    uint8_t key_len = KEY_SIZE[crypter->mode];
+    uint8_t rounds = ROUND_COUNT[crypter->mode];
+    // copy input data
+    memcpy(state, block, BLOCK_SIZE);
+    memcpy(subkey, crypter->mkey, key_len);
+    // start KLEIN rounds
+    for (int i = 1; i <= rounds; ++i)
+    {
+        printf("[round number: %d]\n", i);
+        add_round_key(state, subkey);
+        // operations with 4-bit nibbles start
+        split_nibbles(state, nibbles);
+        sub_nibbles(nibbles);
+        // operations with 4-bit nibbles end
+        merge_nibbles(state, nibbles);
+        rotate_nibbles(state);
+        mix_nibbles(state);
+        key_schedule(subkey, key_len, i);
+    }
+    add_round_key(state, subkey); // subkey for round Nr+1
+    memcpy(block, state, BLOCK_SIZE);
     return KLEIN_RESULT_OK;
 }
 

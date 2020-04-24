@@ -9,12 +9,12 @@ DEMO_APP=$(BUILD_DIR)/klein-demo
 DEMO_FILES=$(DEMO_DIR)/demo.c
 DEMO_OBJS=$(DEMO_FILES:.c=.o)
 
-KLEIN_FILES=$(SRC_DIR)/simple-klein.c
+KLEIN_FILES=$(SRC_DIR)/simple-klein.c $(SRC_DIR)/internals.c
 KLEIN_OBJS=$(KLEIN_FILES:.c=.o)
 
 CFLAGS = -std=c99 -I$(INC_DIR)
 
-.PHONY: default clean
+.PHONY: default clean debug
 
 default: $(DEMO_APP)
 
@@ -30,3 +30,6 @@ $(DEMO_APP): $(BUILD_DIR) $(KLEIN_OBJS) $(DEMO_OBJS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+debug: CFLAGS+=-g
+debug: default
