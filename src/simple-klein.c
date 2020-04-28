@@ -56,9 +56,9 @@ int sklein_crypt_block(sklein_t crypter, uint8_t *block)
         sub_nibbles(nibbles);
         // operations with 4-bit nibbles end
         merge_nibbles(state, nibbles);
-        rotate_nibbles(state);
-        mix_nibbles(state);
-        key_schedule(subkey, key_len, i);
+        rotate_nibbles_enc(state);
+        mix_nibbles_enc(state);
+        key_schedule_enc(subkey, key_len, i);
     }
     add_round_key(state, subkey); // subkey for round Nr+1
     memcpy(block, state, BLOCK_SIZE);
@@ -67,6 +67,41 @@ int sklein_crypt_block(sklein_t crypter, uint8_t *block)
 
 int sklein_decrypt_block(sklein_t crypter, uint8_t *block)
 {
+    // prepare necessary data/variables
+    uint8_t state[BLOCK_SIZE];       // state as N 8-bit words
+    uint8_t nibbles[BLOCK_SIZE * 2]; // state as 2N 4-bit words (stored in 8-bit vars)
+    uint8_t subkey[12];              // prepare space for longest supported key
+    uint8_t key_len = KEY_SIZE[crypter->mode];
+    uint8_t rounds = ROUND_COUNT[crypter->mode];
+
+    // copy input data
+    memcpy(state, block, BLOCK_SIZE);
+    memcpy(subkey, crypter->mkey, key_len);
+
+    // schedule key to last encryption round
+    for (int i = 1; i <= rounds; ++i)
+    {
+        key_schedule_enc(subkey, key_len, i);
+    }
+    add_round_key(state, subkey); // subkey for round 13 (last used on ecryption)
+
+    // start KLEIN decrypion rounds
+    for (int i = rounds; i >= 1; --i)
+    {
+#ifdef DEBUG
+        printf("[round number: %d]\n", i);
+#endif
+        key_schedule_dec(subkey, key_len, i);
+        mix_nibbles_dec(state);
+        rotate_nibbles_dec(state);
+        // operations with 4-bit nibbles start
+        split_nibbles(state, nibbles);
+        sub_nibbles(nibbles);
+        merge_nibbles(state, nibbles);
+        // operations with 4-bit nibbles end
+        add_round_key(state, subkey);
+    }
+    memcpy(block, state, BLOCK_SIZE);
     return KLEIN_RESULT_OK;
 }
 

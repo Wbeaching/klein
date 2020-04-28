@@ -43,7 +43,7 @@ void sub_nibbles(uint8_t *nibbles)
     print_named_buffer("sub_nibbles result", nibbles, 2 * BLOCK_SIZE);
 }
 
-void rotate_nibbles(uint8_t *state)
+void rotate_nibbles_enc(uint8_t *state)
 {
     static uint8_t temp[BLOCK_SIZE];
     for (int i = 0; i < BLOCK_SIZE; ++i)
@@ -54,40 +54,73 @@ void rotate_nibbles(uint8_t *state)
     print_named_buffer("rotate_nibbles result", state, BLOCK_SIZE);
 }
 
-// code with comments taken from:
-// https://en.wikipedia.org/wiki/Rijndael_MixColumns
-static void gmix_column(uint8_t *state4b)
+void rotate_nibbles_dec(uint8_t *state)
 {
-    unsigned char a[4];
-    unsigned char b[4];
-    unsigned char c;
-    unsigned char h;
-    /* The array 'a' is simply a copy of the input array 'r'
-     * The array 'b' is each element of the array 'a' multiplied by 2
-     * in Rijndael's Galois field
-     * a[n] ^ b[n] is element n multiplied by 3 in Rijndael's Galois field */
-    for (c = 0; c < 4; c++)
+    static uint8_t temp[BLOCK_SIZE];
+    for (int i = 0; i < BLOCK_SIZE; ++i)
     {
-        a[c] = state4b[c];
-        /* h is 0xff if the high bit of r[c] is set, 0 otherwise */
-        h = (unsigned char)((signed char)state4b[c] >> 7); /* arithmetic right shift, thus shifting in either zeros or ones */
-        b[c] = state4b[c] << 1;                            /* implicitly removes high bit because b[c] is an 8-bit char, so we xor by 0x1b and not 0x11b in the next line */
-        b[c] ^= 0x1B & h;                                  /* Rijndael's Galois field */
+        temp[(i + 2) % 8] = state[i];
     }
-    state4b[0] = b[0] ^ a[3] ^ a[2] ^ b[1] ^ a[1]; /* 2 * a0 + a3 + a2 + 3 * a1 */
-    state4b[1] = b[1] ^ a[0] ^ a[3] ^ b[2] ^ a[2]; /* 2 * a1 + a0 + a3 + 3 * a2 */
-    state4b[2] = b[2] ^ a[1] ^ a[0] ^ b[3] ^ a[3]; /* 2 * a2 + a1 + a0 + 3 * a3 */
-    state4b[3] = b[3] ^ a[2] ^ a[1] ^ b[0] ^ a[0]; /* 2 * a3 + a2 + a1 + 3 * a0 */
+    memcpy(state, temp, BLOCK_SIZE);
+    print_named_buffer("rotate_nibbles_dec result", state, BLOCK_SIZE);
 }
 
-void mix_nibbles(uint8_t *state)
+static uint8_t gmult(uint8_t value1, uint8_t value2)
 {
-    gmix_column(state);
-    gmix_column(state + 4);
+    uint8_t p = 0;
+    uint8_t hi_bit_set;
+    for (uint8_t counter = 0; counter < 8; counter++)
+    {
+        if ((value2 & 1) == 1)
+            p ^= value1;
+        hi_bit_set = (value1 & 0x80);
+        value1 <<= 1;
+        if (hi_bit_set == 0x80)
+            value1 ^= 0x1b;
+        value2 >>= 1;
+    }
+    return p;
+}
+
+static void mix_column_enc(uint8_t *cols)
+{
+    uint8_t result[4];
+
+    result[0] = gmult(cols[0], 2) ^ gmult(cols[1], 3) ^ gmult(cols[2], 1) ^ gmult(cols[3], 1);
+    result[1] = gmult(cols[0], 1) ^ gmult(cols[1], 2) ^ gmult(cols[2], 3) ^ gmult(cols[3], 1);
+    result[2] = gmult(cols[0], 1) ^ gmult(cols[1], 1) ^ gmult(cols[2], 2) ^ gmult(cols[3], 3);
+    result[3] = gmult(cols[0], 3) ^ gmult(cols[1], 1) ^ gmult(cols[2], 1) ^ gmult(cols[3], 2);
+
+    memcpy(cols, result, 4);
+}
+
+static void mix_column_dec(uint8_t *cols)
+{
+    uint8_t result[4];
+
+    result[0] = gmult(cols[0], 0x0e) ^ gmult(cols[1], 0x0b) ^ gmult(cols[2], 0x0d) ^ gmult(cols[3], 0x09);
+    result[1] = gmult(cols[0], 0x09) ^ gmult(cols[1], 0x0e) ^ gmult(cols[2], 0x0b) ^ gmult(cols[3], 0x0d);
+    result[2] = gmult(cols[0], 0x0d) ^ gmult(cols[1], 0x09) ^ gmult(cols[2], 0x0e) ^ gmult(cols[3], 0x0b);
+    result[3] = gmult(cols[0], 0x0b) ^ gmult(cols[1], 0x0d) ^ gmult(cols[2], 0x09) ^ gmult(cols[3], 0x0e);
+
+    memcpy(cols, result, 4);
+}
+
+void mix_nibbles_enc(uint8_t *state)
+{
+    mix_column_enc(state);
+    mix_column_enc(state + 4);
     print_named_buffer("mix_nibbles result", state, BLOCK_SIZE);
 }
 
-void key_schedule(uint8_t *subkey, uint8_t keylen, uint8_t round)
+void mix_nibbles_dec(uint8_t *state)
+{
+    mix_column_dec(state);
+    mix_column_dec(state + 4);
+    print_named_buffer("mix_nibbles_dec result", state, BLOCK_SIZE);
+}
+
+void key_schedule_enc(uint8_t *subkey, uint8_t keylen, uint8_t round)
 {
     uint8_t half_key = keylen / 2; // value used multiple times
     // prepare for longest key size + 1 (used in rotation)
@@ -101,7 +134,7 @@ void key_schedule(uint8_t *subkey, uint8_t keylen, uint8_t round)
         part_a[i] = subkey[i + 1];
         part_b[i] = subkey[i + 1 + half_key];
     }
-    // rotate both parts
+    // finish rotation
     part_a[half_key - 1] = subkey[0];
     part_b[half_key - 1] = subkey[half_key];
 
@@ -132,6 +165,55 @@ void key_schedule(uint8_t *subkey, uint8_t keylen, uint8_t round)
         subkey[i] = part_a[i];
         subkey[i + half_key] = part_b[i];
     }
+    print_named_buffer("key_schedule:key after", subkey, keylen);
+}
+
+void key_schedule_dec(uint8_t *subkey, uint8_t keylen, uint8_t round)
+{
+    uint8_t half_key = keylen / 2; // value used multiple times
+    // prepare for longest key size + 1 (used in rotation)
+    uint8_t part_a[KEY_SIZE[KLEIN_MODE_96] / 2];
+    uint8_t part_b[KEY_SIZE[KLEIN_MODE_96] / 2];
+    uint8_t temp[KEY_SIZE[KLEIN_MODE_96] / 2];
+
+    // copy two halfes
+    for (int i = 0; i < half_key; ++i)
+    {
+        part_a[i] = subkey[i];
+        part_b[i] = subkey[i + half_key];
+    }
+
+    // update part_a
+    part_a[2] ^= round;
+
+    // update part_b
+    temp[0] = sbox(part_b[1] >> 4);
+    temp[1] = sbox(part_b[1] & 0x0f);
+    temp[2] = sbox(part_b[2] >> 4);
+    temp[3] = sbox(part_b[2] & 0x0f);
+    part_b[1] = temp[0] << 4 | temp[1];
+    part_b[2] = temp[2] << 4 | temp[3];
+
+    memcpy(temp, part_a, half_key);
+    // WARNING: be carefull when changing this loop!
+    // order of operations inside is crucial!
+    for (int i = 0; i < half_key; ++i)
+    {
+        part_a[i] = part_a[i] ^ part_b[i];
+        part_b[i] = temp[i];
+    }
+    // ========
+
+    // merge (with rotation) both parts back to the key
+    for (int i = 0; i < half_key - 1; ++i)
+    {
+        subkey[i + 1] = part_a[i];
+        subkey[i + half_key + 1] = part_b[i];
+    }
+    // finish rotation
+    subkey[0] = part_a[half_key - 1];
+    subkey[half_key] = part_b[half_key - 1];
+
     print_named_buffer("key_schedule:key after", subkey, keylen);
 }
 

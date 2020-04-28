@@ -27,11 +27,17 @@ void add_round_key(uint8_t *state, uint8_t *subkey);
 
 void sub_nibbles(uint8_t *state);
 
-void rotate_nibbles(uint8_t *state);
+void rotate_nibbles_enc(uint8_t *state);
 
-void mix_nibbles(uint8_t *state);
+void rotate_nibbles_dec(uint8_t *state);
 
-void key_schedule(uint8_t *subkey, uint8_t keylen, uint8_t round);
+void mix_nibbles_enc(uint8_t *state);
+
+void mix_nibbles_dec(uint8_t *state);
+
+void key_schedule_enc(uint8_t *subkey, uint8_t keylen, uint8_t round);
+
+void key_schedule_dec(uint8_t *subkey, uint8_t keylen, uint8_t round);
 
 void split_nibbles(uint8_t *state, uint8_t *nibbles);
 
