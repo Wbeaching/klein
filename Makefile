@@ -19,9 +19,11 @@ TEST_BINARY=$(BUILD_DIR)/klein-tests
 
 CFLAGS = -std=c99 -I$(INC_DIR)
 
-.PHONY: default clean debug tests
+.PHONY: default clean debug demo tests
 
-default: $(DEMO_APP)
+default: demo
+
+demo: $(DEMO_APP)
 
 clean:
 	rm -rf $(BUILD_DIR)

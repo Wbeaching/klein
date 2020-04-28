@@ -2,13 +2,31 @@
 
 This repository contains simple implementation (written in C) of KLEIN block cipher. More information about this cipher can be found in authors' paper: [KLEIN: A New Family of Lightweight Block Ciphers](https://research.utwente.nl/files/5095831/The_KLEIN_Block_Cipher.pdf).
 
-## Compilation and usage
+## Library compilation and usage
 
 TBD when implementation finished.
 
+## Demo application
+
+Simple demo application that shows how to use this implementation can be found in *./demo/demo.c*. To build demo application call:
+
+```bash
+make demo
+```
+
+Executable file will be stored in *./build/klein-demo*. Currently demo presents only usage of *KLEIN-64*.
+
 ## Tests and test vectors
 
-TBD when tests written and uploaded
+To validate implemented encryption and decryption test vectors from KLEIN specification (Appendix A.) are used. All test related files are stored in *./test* directory. Test vectors are declared and defined in *test-vectors.h* and *test-vectors.c* respectively. Simple "test engine" implementation can be found in *main.c*.
+
+To build and launch tests one has to call:
+
+```bash
+make tests
+```
+
+Test binary will be created in *./build/klein-tests* directory and executed.
 
 ## Disclaimer
 
