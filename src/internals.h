@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include <simple-klein.h>
+#include <sklein.h>
 
 // block size is always 8B
 #define BLOCK_SIZE 8

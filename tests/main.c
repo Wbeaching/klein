@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include <simple-klein.h>
+#include <sklein.h>
 
 #include "test-vectors.h"
 
@@ -53,14 +53,6 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        // set key again to decrypt data
-        result = sklein_set_key(crypter, klein_test_data[i]->key, klein_test_data[i]->key_len);
-        if (result != KLEIN_RESULT_OK)
-        {
-            tests_failed++;
-            printf("Failed to set key with length %ld\n", klein_test_data[i]->key_len);
-            continue;
-        }
         result = sklein_decrypt_block(crypter, temp_buffer);
         if (result != KLEIN_RESULT_OK)
         {

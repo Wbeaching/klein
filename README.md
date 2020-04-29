@@ -1,12 +1,18 @@
-# KLEIN - lighweight block cipher
+# Simple KLEIN (lighweight block cipher) implementation
 
 This repository contains simple implementation (written in C) of KLEIN block cipher. More information about this cipher can be found in authors' paper: [KLEIN: A New Family of Lightweight Block Ciphers](https://research.utwente.nl/files/5095831/The_KLEIN_Block_Cipher.pdf).
 
 ## Library compilation and usage
 
-TBD when implementation finished.
+KLEIN implementation can be compiled to both static and dynamic library. To build both libraries call:
 
-## Demo application
+```shell
+make library
+```
+
+Header file (*sklein.h*) and two versions of library (*libsklein.a* and *libsklein.so*) will be placed in output directory (*./build*).
+
+## Demo app compilation
 
 Simple demo application that shows how to use this implementation can be found in *./demo/demo.c*. To build demo application call:
 
@@ -14,7 +20,7 @@ Simple demo application that shows how to use this implementation can be found i
 make demo
 ```
 
-Executable file will be stored in *./build/klein-demo*. Currently demo presents only usage of *KLEIN-64*.
+Executable file will be stored in *./build/sklein-demo*. Currently demo presents only usage of *KLEIN-64*.
 
 ## Tests and test vectors
 
@@ -26,7 +32,7 @@ To build and launch tests one has to call:
 make tests
 ```
 
-Test binary will be created in *./build/klein-tests* directory and executed.
+Test binary will be created in *./build/sklein-tests* directory and executed.
 
 ## Disclaimer
 

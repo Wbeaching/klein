@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include <simple-klein.h>
+#include <sklein.h>
 
 static void print_hex_block(uint8_t *data, uint32_t length);
 

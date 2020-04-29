@@ -1,4 +1,4 @@
-#include <simple-klein.h>
+#include <sklein.h>
 #include "test-vectors.h"
 
 struct test_case test_klein64_1;
