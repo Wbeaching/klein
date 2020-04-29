@@ -15,6 +15,6 @@ struct test_case
 };
 
 int klein_test_count;
-struct test_case *klein_test_data[4];
+struct test_case *klein_test_data[12];
 
 #endif // __TEST_VECTORS_H__
