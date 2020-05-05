@@ -111,6 +111,9 @@ void sklein_destroy(sklein_t crypter)
     {
         return;
     }
+    // let's not leave any information about KLEIN settings (ex. key) in memory
+    memset(crypter, 0xff, sizeof(struct simple_klein));
+    free(crypter);
 }
 
 const char *klein_mode_to_string(int mode)
