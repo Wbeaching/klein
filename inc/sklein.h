@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define sklein_crypt_block(x,y) sklein_encrypt_block(x,y); \
+    _Pragma("message \"sklein_crypt_block() function is deprecated and will be removed - use sklein_encrypt_block()\"")
+
 typedef struct simple_klein *sklein_t;
 
 /** Enum type with supported KLEIN modes
@@ -46,7 +49,7 @@ sklein_t sklein_create(int km);
  */
 int sklein_set_key(sklein_t crypter, const uint8_t *mkey, uint8_t k_length);
 
-/** sklein_crypt_block() implements KLEIN encryption
+/** sklein_encrypt_block() implements KLEIN encryption
  *
  * @param crypter KLEIN crypting object created by #sklein_create()
  * @param block pointer to 8 bytes of data to be encrypted, encryption result will be stored in the same buffer
@@ -54,7 +57,7 @@ int sklein_set_key(sklein_t crypter, const uint8_t *mkey, uint8_t k_length);
  * @return #KLEIN_RESULT_OK on success
  * @return #KLEIN_RESULT_INVALID_PARAM if invalid parameter given
  */
-int sklein_crypt_block(sklein_t crypter, uint8_t *block);
+int sklein_encrypt_block(sklein_t crypter, uint8_t *block);
 
 /** sklein_decrypt_block() implements KLEIN decryption
  *

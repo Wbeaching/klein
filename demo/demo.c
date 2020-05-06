@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    result = sklein_crypt_block(crypter, data64);
+    result = sklein_encrypt_block(crypter, data64);
     if (result != KLEIN_RESULT_OK)
     {
         printf("ERROR: Failed to crypt\n");

@@ -45,13 +45,13 @@ All necessary SKLEIN data types and functions are defined in *sklein.h" header f
 ```C
 sklein_t sklein_create(int km);
 
-int sklein_set_key(sklein_t crypter, const uint8_t *mkey, uint8_t k_length);
+int sklein_set_key(sklein_t crypter, const uint8_t *mkey, uint8\_t k\_length);
 
-int sklein_crypt_block(sklein_t crypter, uint8_t *block);
+int sklein\_encrypt\_block(sklein\_t crypter, uint8\_t *block);
 
 int sklein_decrypt_block(sklein_t crypter, uint8_t *block);
 
-void sklein_destroy(sklein_t crypter);
+void sklein\_destroy(sklein\_t crypter);
 ```
 
 Please see mentioned header for more details.
@@ -79,7 +79,7 @@ This library provides only implementation of KLEIN block cipher with support of 
         return 1;
     }
 
-    result = sklein_crypt_block(crypter, data64);
+    result = sklein_encrypt_block(crypter, data64);
     if (result != KLEIN_RESULT_OK)
     {
         printf("ERROR: Failed to crypt\n");
@@ -117,10 +117,11 @@ In similar way encrypted data can be decrypted with use of provided implementati
 
 ```
 
-Please see provided *demo/demo.c" file for full encryption/decryption example.
+Please see provided *demo/demo.c* file for full encryption/decryption example.
 
 ## Disclaimer
 
 This implementation has been written "just for fun" and is published "AS IS". It is not optimized neither analyzed for security weakness.
 
 Code form this repository can be included in other projects in parts or as a whole but it is not recommended to use it in production environment.
+

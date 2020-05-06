@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         print_buffer("message", klein_test_data[i]->data, klein_test_data[i]->data_len);
         print_buffer("key", klein_test_data[i]->key, klein_test_data[i]->key_len);
         memcpy(temp_buffer, klein_test_data[i]->data, klein_test_data[i]->data_len);
-        result = sklein_crypt_block(crypter, temp_buffer);
+        result = sklein_encrypt_block(crypter, temp_buffer);
         if (result != KLEIN_RESULT_OK)
         {
             tests_failed++;

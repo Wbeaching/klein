@@ -33,7 +33,7 @@ int sklein_set_key(sklein_t crypter, const uint8_t *mkey, uint8_t k_length)
     return KLEIN_RESULT_OK;
 }
 
-int sklein_crypt_block(sklein_t crypter, uint8_t *block)
+int sklein_encrypt_block(sklein_t crypter, uint8_t *block)
 {
     // prepare necessary data/variables
     uint8_t state[BLOCK_SIZE];       // state as N 8-bit words
