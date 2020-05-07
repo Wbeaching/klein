@@ -134,3 +134,70 @@ const char *klein_mode_to_string(int mode)
         break;
     }
 }
+
+int sklein_set_iv(sklein_t crypter, const uint8_t *iv)
+{
+    if (!crypter || !iv)
+    {
+        return KLEIN_RESULT_INVALID_PARAM;
+    }
+    memcpy(crypter->iv, iv, BLOCK_SIZE);
+    return KLEIN_RESULT_FAIL;
+}
+
+int sklein_cbc_encrypt_data(sklein_t crypter, uint8_t *data, size_t len)
+{
+    if (!crypter || !data)
+    {
+        return KLEIN_RESULT_INVALID_PARAM;
+    }
+    if (len == 0 || len & 0x07)
+    {
+        // not a multiply of 8
+        return KLEIN_RESULT_INVALID_LENGTH;
+    }
+
+    for (int i = 0; i < (len >> 3); ++i)
+    {
+        // first XOR input block with IV (same operation as done by add_round_key() )
+        add_round_key(data, crypter->iv);
+        // use standard KLEIN encryption for one block
+        sklein_encrypt_block(crypter, data);
+        // copy current output as next IV
+        memcpy(crypter->iv, data, BLOCK_SIZE);
+        // move data pointer
+        data += BLOCK_SIZE;
+    }
+    return KLEIN_RESULT_OK;
+}
+
+int sklein_cbc_decrypt_data(sklein_t crypter, uint8_t *data, size_t len)
+{
+    if (!crypter || !data)
+    {
+        return KLEIN_RESULT_INVALID_PARAM;
+    }
+    if (len == 0 || len & 0x07)
+    {
+        // not a multiply of 8
+        return KLEIN_RESULT_INVALID_LENGTH;
+    }
+
+    // buffer for storing input to used later as old IV
+    uint8_t iv_buffer[BLOCK_SIZE];
+
+    for (int i = 0; i < (len >> 3); ++i)
+    {
+        // save input block as future IV backup
+        memcpy(iv_buffer, data, BLOCK_SIZE);
+        // use standard KLEIN decryption for one block
+        sklein_decrypt_block(crypter, data);
+        // XOR decrypted block with IV (same operation as done by add_round_key() )
+        add_round_key(data, crypter->iv);
+        // copy input backup as next IV
+        memcpy(crypter->iv, iv_buffer, BLOCK_SIZE);
+        // move data pointer
+        data += BLOCK_SIZE;
+    }
+    return KLEIN_RESULT_OK;
+}

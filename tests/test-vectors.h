@@ -17,4 +17,15 @@ struct test_case
 int klein_test_count;
 struct test_case *klein_test_data[12];
 
+// data for CBC tests
+size_t klein_test_cbc_1_len;
+uint8_t klein_test_cbc_1_data[24];
+uint8_t klein_test_cbc_1_iv[8];
+uint8_t klein_test_cbc_1_key[8];
+
+size_t klein_test_cbc_2_len;
+uint8_t klein_test_cbc_2_data[48];
+uint8_t klein_test_cbc_2_iv[8];
+uint8_t klein_test_cbc_2_key[8];
+
 #endif // __TEST_VECTORS_H__

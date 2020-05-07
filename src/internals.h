@@ -7,9 +7,6 @@
 
 // block size is always 8B
 #define BLOCK_SIZE 8
-// masks for sub_nibbles() operations
-#define HIGHER 0xf0
-#define LOWER 0x0f
 
 const uint8_t ROUND_COUNT[3];
 const uint8_t KEY_SIZE[3];
@@ -20,6 +17,8 @@ struct simple_klein
     uint8_t mkey[12];  // prepare structure for longest key (KLEIN-96)
     int8_t nr;         // number of rounds (defined by mode)
     int8_t curr_round; // current round number
+    // addition for CBC mode
+    uint8_t iv[BLOCK_SIZE];
 };
 
 // in this function only 8B (64b) of key are used in any supported mode

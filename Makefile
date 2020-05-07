@@ -42,7 +42,6 @@ $(DEMO_APP): $(BUILD_DIR)/$(LIBRARY_NAME).a $(DEMO_OBJS)
 
 $(TEST_BINARY): $(BUILD_DIR) $(KLEIN_OBJS) $(TEST_OBJS)
 	$(CC) $(TEST_OBJS) $(KLEIN_OBJS) -o $(TEST_BINARY)
-	$(TEST_BINARY)
 
 library: $(BUILD_DIR)/$(LIBRARY_NAME).a $(BUILD_DIR)/$(LIBRARY_NAME).so
 	cp $(INC_DIR)/sklein.h $(BUILD_DIR)/
@@ -55,6 +54,7 @@ $(BUILD_DIR)/$(LIBRARY_NAME).so: $(BUILD_DIR) $(KLEIN_OBJS)
 
 tests: CFLAGS+=-I$(TEST_DIR)
 tests: $(TEST_BINARY)
+	$(TEST_BINARY)
 
 debug: CFLAGS+=-g -DDEBUG
 debug: default

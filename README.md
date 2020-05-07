@@ -119,9 +119,24 @@ In similar way encrypted data can be decrypted with use of provided implementati
 
 Please see provided *demo/demo.c* file for full encryption/decryption example.
 
+### KLEIN in CBC (Cipher BLock Chaining) mode
+
+For encrypting data sets larger than one block (8B) KLEIN cipher has been enclosed in Cipher Block Chaining algorithm. It uses 8B Initialization Vector and encrypts blocks of N*8B length.
+
+Functions below have been added specificaly for CBC mode:
+
+```C
+int sklein_set_iv(sklein_t crypter, const uint8_t *iv);
+
+int sklein_cbc_encrypt_data(sklein_t crypter, uint8_t *data, size_t len);
+
+int sklein_cbc_decrypt_data(sklein_t crypter, uint8_t *data, size_t len);
+```
+
+Both *encrypt* and *decrypt* functions are placing encryption result in input data buffer.
+
 ## Disclaimer
 
 This implementation has been written "just for fun" and is published "AS IS". It is not optimized neither analyzed for security weakness.
 
 Code form this repository can be included in other projects in parts or as a whole but it is not recommended to use it in production environment.
-

@@ -2,6 +2,7 @@
 #define __SIMPLE_KLEIN_H__
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #define sklein_crypt_block(x,y) sklein_encrypt_block(x,y); \
     _Pragma("message \"sklein_crypt_block() function is deprecated and will be removed - use sklein_encrypt_block()\"")
@@ -82,5 +83,39 @@ void sklein_destroy(sklein_t crypter);
  * @return string representing provided enum value
  */
 const char *klein_mode_to_string(int mode);
+
+/* Additional functions for experimental CBC implementation */
+
+/** sklein_set_iv() sets Initialization Vector for CBC encryption
+ *
+ * @param crypter KLEIN crypting object created by #sklein_create()
+ * @param iv pointer to 8 bytes of Initialization Vector
+ *
+ * @return #KLEIN_RESULT_OK on success
+ * @return #KLEIN_RESULT_INVALID_PARAM if invalid parameter given
+ */
+int sklein_set_iv(sklein_t crypter, const uint8_t *iv);
+
+/** sklein_cbc_encrypt_data() crypts provided data block using KLEIN in CBC mode
+ *
+ * @param crypter KLEIN crypting object created by #sklein_create()
+ * @param data pointer to input plaintext and output cipher buffer
+ * @param len buffer length (has to be multiple of 8B)
+ *
+ * @return #KLEIN_RESULT_OK on success
+ * @return #KLEIN_RESULT_INVALID_PARAM or #KLEIN_RESULT_INVALID_LENGTH on error
+ */
+int sklein_cbc_encrypt_data(sklein_t crypter, uint8_t *data, size_t len);
+
+/** sklein_cbc_decrypt_data() crypts provided data block using KLEIN in CBC mode
+ *
+ * @param crypter KLEIN crypting object created by #sklein_create()
+ * @param data pointer to input cipher and output plaintext buffer
+ * @param len buffer length (has to be multiple of 8B)
+ *
+ * @return #KLEIN_RESULT_OK on success
+ * @return #KLEIN_RESULT_INVALID_PARAM or #KLEIN_RESULT_INVALID_LENGTH on error
+ */
+int sklein_cbc_decrypt_data(sklein_t crypter, uint8_t *data, size_t len);
 
 #endif
