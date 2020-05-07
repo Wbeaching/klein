@@ -140,3 +140,8 @@ Both *encrypt* and *decrypt* functions are placing encryption result in input da
 This implementation has been written "just for fun" and is published "AS IS". It is not optimized neither analyzed for security weakness.
 
 Code form this repository can be included in other projects in parts or as a whole but it is not recommended to use it in production environment.
+
+## Author / contact
+
+If you need to contact me feel free to write me an email:
+[markamdev.84#dontwantSPAM#gmail.com](mailto:)
